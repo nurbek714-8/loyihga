@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#11121a">
+  <title>Навыки и рейтинг | IT LIVE</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #11121a;
+      --panel: #191a24;
+      --panel-soft: #1e1f2b;
+      --line: #2b2c39;
+      --text: #f4f3fa;
+      --muted: #9293a5;
+      --purple: #a78bfa;
+      --purple-dark: #7655df;
+      --green: #65d6a2;
+      --yellow: #f5c76a;
+      --blue: #71b7ff;
+      --pink: #f28bc4;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button { font: inherit; }
+    button:focus-visible, a:focus-visible { outline: 2px solid var(--purple); outline-offset: 3px; }
+
+    .app { min-height: 100vh; }
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 5;
+      display: flex;
+      width: 244px;
+      flex-direction: column;
+      padding: 27px 17px 20px;
+      border-right: 1px solid var(--line);
+      background: #15161f;
+    }
+
+    .brand { display: flex; align-items: center; gap: 11px; padding: 0 10px 36px; }
+    .brand-mark {
+      display: grid;
+      width: 37px;
+      height: 37px;
+      place-items: center;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #b69bff, #7855e4);
+      color: white;
+      font-size: 19px;
+      font-weight: 800;
+      box-shadow: 0 7px 25px #8d6af744;
+    }
+    .brand-name { font-size: 17px; font-weight: 750; letter-spacing: -.4px; }
+    .brand-name span { color: var(--purple); }
+    .nav-label {
+      padding: 0 11px 10px;
+      color: #747587;
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+    .nav-list { display: grid; gap: 5px; }
+    .nav-button {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 12px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: #a5a5b5;
+      cursor: pointer;
+      text-align: left;
+      transition: background .2s, color .2s;
+    }
+    .nav-button:hover { background: #22232f; color: var(--text); }
+    .nav-button.active { background: #302844; color: #c5afff; }
+    .nav-icon { width: 20px; text-align: center; font-size: 17px; }
+    .sidebar-bottom { margin-top: auto; }
+    .profile-mini {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 8px 0;
+      border-top: 1px solid var(--line);
+    }
+    .avatar {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 1px solid #8c70df88;
+      border-radius: 50%;
+      background: #3c315b;
+      color: #e3d9ff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .profile-name { font-size: 12px; font-weight: 700; }
+    .profile-role { color: var(--muted); font-size: 11px; }
+
+    .main { max-width: 1600px; margin-left: 244px; padding: 30px 38px 56px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 32px; }
+    .eyebrow { color: var(--purple); font-size: 11px; font-weight: 750; letter-spacing: 1.6px; text-transform: uppercase; }
+    h1 { margin: 4px 0 0; font-size: clamp(25px, 3vw, 34px); letter-spacing: -1.2px; line-height: 1.2; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .streak, .level-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: var(--panel);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .streak strong { color: var(--yellow); }
+    .level-pill strong { color: var(--purple); }
+
+    .view { display: none; }
+    .view.active { display: block; animation: appear .25s ease-out; }
+    @keyframes appear { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    .welcome {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      min-height: 210px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 30px 34px;
+      border: 1px solid #594486;
+      border-radius: 18px;
+      background: radial-gradient(ellipse at 85% 10%, #714edc55, transparent 38%), linear-gradient(115deg, #29213e, #211d31 65%, #242038);
+    }
+    .welcome::after {
+      position: absolute;
+      top: -75px;
+      right: 8%;
+      width: 220px;
+      height: 220px;
+      border: 1px solid #bda5ff26;
+      border-radius: 50%;
+      box-shadow: 0 0 0 28px #bda5ff0c, 0 0 0 56px #bda5ff08;
+      content: "";
+    }
+    .welcome-copy { position: relative; z-index: 1; max-width: 560px; }
+    .welcome h2 { margin: 8px 0; font-size: clamp(24px, 3vw, 32px); letter-spacing: -.8px; }
+    .welcome p { max-width: 470px; margin: 0; color: #c1bacf; }
+    .welcome-xp { position: relative; z-index: 1; width: min(260px, 32%); min-width: 190px; }
+    .xp-label { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 9px; color: #ded8eb; font-size: 12px; }
+    .xp-label strong { color: white; }
+    .progress-track { overflow: hidden; height: 8px; border-radius: 99px; background: #ffffff1a; }
+    .progress-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #9270f5, #c1aaff); }
+    .xp-next { margin-top: 9px; color: #b5aec4; font-size: 11px; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 15px; margin: 20px 0; }
+    .stat-card, .panel { border: 1px solid var(--line); border-radius: 14px; background: var(--panel); }
+    .stat-card { padding: 17px 18px; }
+    .stat-top { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 12px; }
+    .stat-icon { display: grid; width: 31px; height: 31px; place-items: center; border-radius: 9px; background: #a78bfa1b; color: var(--purple); }
+    .stat-value { margin-top: 10px; font-size: 25px; font-weight: 760; letter-spacing: -.8px; }
+    .stat-note { margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .stat-note .up { color: var(--green); }
+
+    .content-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(280px, .85fr); gap: 17px; }
+    .panel { padding: 20px; }
+    .panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 17px; }
+    .panel-heading h2 { margin: 0; font-size: 16px; letter-spacing: -.3px; }
+    .panel-heading p { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
+    .text-button { padding: 5px 0; border: 0; background: transparent; color: #bea9ff; cursor: pointer; font-size: 11px; font-weight: 700; }
+    .text-button:hover { color: white; }
+    .skill-list { display: grid; gap: 16px; }
+    .skill-row { display: grid; grid-template-columns: 35px minmax(100px, 1fr) auto; align-items: center; gap: 11px; }
+    .skill-symbol { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid var(--line); border-radius: 10px; background: var(--panel-soft); font-size: 16px; }
+    .skill-title { font-size: 12px; font-weight: 700; }
+    .skill-subtitle { color: var(--muted); font-size: 10px; }
+    .skill-row .progress-track { height: 5px; margin-top: 7px; background: #2d2e3a; }
+    .skill-percent { color: #c8c7d4; font-size: 11px; font-weight: 700; }
+
+    .leader-list { display: grid; gap: 3px; }
+    .leader-row { display: grid; grid-template-columns: 25px 34px minmax(0, 1fr) auto; align-items: center; gap: 9px; padding: 9px 5px; border-radius: 9px; }
+    .leader-row.current { background: #a78bfa12; }
+    .rank-number { color: var(--muted); font-size: 12px; font-weight: 700; text-align: center; }
+    .leader-row:first-child .rank-number { color: var(--yellow); }
+    .leader-info { min-width: 0; }
+    .leader-name { overflow: hidden; font-size: 11px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+    .leader-meta { color: var(--muted); font-size: 10px; }
+    .leader-xp { color: #d6c8ff; font-size: 11px; font-weight: 750; white-space: nowrap; }
+
+    .section-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 22px 0 16px; }
+    .section-toolbar h2 { margin: 0; font-size: 18px; }
+    .filter-group { display: flex; flex-wrap: wrap; gap: 7px; }
+    .filter-button {
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: #b2b2c0;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .filter-button:hover, .filter-button.active { border-color: #8064c9; background: #302844; color: #d4c6ff; }
+    .tree-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .tree-card { padding: 17px; border: 1px solid var(--line); border-radius: 13px; background: var(--panel); }
+    .tree-card-top { display: flex; align-items: center; gap: 11px; }
+    .tree-card .skill-symbol { width: 40px; height: 40px; font-size: 18px; }
+    .tree-card h3 { margin: 0; font-size: 13px; }
+    .tree-card .category-name { color: var(--muted); font-size: 10px; }
+    .tree-card p { min-height: 34px; margin: 13px 0; color: #a7a7b7; font-size: 11px; }
+    .tree-progress-label { display: flex; justify-content: space-between; margin: 0 0 7px; color: #b8b8c6; font-size: 10px; }
+    .tree-card .progress-track { height: 6px; background: #2c2d39; }
+    .tree-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; color: var(--muted); font-size: 10px; }
+    .status-tag { padding: 4px 7px; border: 1px solid #65d6a233; border-radius: 99px; background: #65d6a20f; color: var(--green); font-size: 9px; font-weight: 700; }
+    .status-tag.locked { border-color: #77788833; background: #7778880d; color: #9697a6; }
+
+    .ranking-layout { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(240px, .7fr); gap: 16px; }
+    .leaderboard-table { width: 100%; border-collapse: collapse; text-align: left; }
+    .leaderboard-table th { padding: 10px 8px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 10px; font-weight: 650; }
+    .leaderboard-table td { padding: 12px 8px; border-bottom: 1px solid #292a35; font-size: 11px; }
+    .leaderboard-table tr:last-child td { border-bottom: 0; }
+    .leaderboard-table .self-row { background: #a78bfa0d; }
+    .table-user { display: flex; align-items: center; gap: 9px; min-width: 125px; }
+    .table-user .avatar { width: 31px; height: 31px; font-size: 10px; }
+    .table-name { font-weight: 700; }
+    .table-sub { color: var(--muted); font-size: 9px; }
+    .rank-badge { color: var(--yellow); font-weight: 800; }
+    .xp-number { color: #d4c6ff; font-weight: 750; }
+    .weekly-card { display: grid; align-content: start; gap: 12px; }
+    .weekly-card h3 { margin: 0; font-size: 14px; }
+    .weekly-card > p { margin: -7px 0 3px; color: var(--muted); font-size: 11px; }
+    .weekly-stat { display: flex; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 11px; }
+    .weekly-stat span { color: var(--muted); }
+    .weekly-stat strong { color: var(--green); }
+    .weekly-note { padding: 12px; border-radius: 10px; background: #a78bfa12; color: #c9bee4; font-size: 10px; }
+
+    .achievement-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .achievement { position: relative; min-height: 150px; padding: 17px; border: 1px solid var(--line); border-radius: 13px; background: var(--panel); }
+    .achievement.locked { opacity: .62; }
+    .achievement-icon { display: grid; width: 43px; height: 43px; margin-bottom: 13px; place-items: center; border: 1px solid #a78bfa30; border-radius: 13px; background: #a78bfa17; font-size: 21px; }
+    .achievement h3 { margin: 0 0 4px; font-size: 12px; }
+    .achievement p { margin: 0; color: var(--muted); font-size: 10px; }
+    .achievement-xp { display: inline-block; margin-top: 12px; color: var(--yellow); font-size: 10px; font-weight: 750; }
+    .earned-mark { position: absolute; top: 15px; right: 15px; color: var(--green); font-size: 11px; font-weight: 750; }
+    .empty-message { grid-column: 1 / -1; padding: 30px; color: var(--muted); text-align: center; }
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 10;
+      max-width: calc(100vw - 32px);
+      padding: 12px 17px;
+      transform: translateY(20px);
+      border: 1px solid #65d6a255;
+      border-radius: 10px;
+      background: #1c3029;
+      color: #bdf3d8;
+      font-size: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s, transform .2s;
+    }
+    .toast.visible { transform: translateY(0); opacity: 1; }
+    .footer-note { margin-top: 23px; color: #717282; font-size: 10px; text-align: center; }
+
+    @media (max-width: 1050px) {
+      .main { padding-right: 24px; padding-left: 24px; }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .tree-grid, .achievement-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      .sidebar { position: sticky; inset: 0 0 auto; width: 100%; height: auto; padding: 10px 13px; border-right: 0; border-bottom: 1px solid var(--line); }
+      .brand { padding: 0 4px 10px; }
+      .brand-mark { width: 32px; height: 32px; }
+      .nav-label, .sidebar-bottom { display: none; }
+      .nav-list { display: flex; gap: 5px; overflow-x: auto; }
+      .nav-button { width: auto; flex: 1 0 auto; justify-content: center; gap: 7px; padding: 9px 10px; font-size: 11px; }
+      .nav-icon { width: auto; }
+      .main { margin-left: 0; padding: 24px 16px 40px; }
+      .topbar { align-items: flex-start; margin-bottom: 20px; }
+      .topbar-right { gap: 6px; }
+      .streak, .level-pill { gap: 5px; padding: 8px; font-size: 10px; }
+      .welcome { min-height: 0; align-items: flex-start; flex-direction: column; padding: 24px; }
+      .welcome-xp { width: 100%; }
+      .content-grid, .ranking-layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .topbar { flex-direction: column; }
+      .stats-grid { gap: 9px; }
+      .stat-card { padding: 13px; }
+      .stat-value { font-size: 22px; }
+      .tree-grid, .achievement-grid { grid-template-columns: 1fr; }
+      .panel { padding: 15px; }
+      .leaderboard-table th, .leaderboard-table td { padding-right: 4px; padding-left: 4px; }
+      .table-user { min-width: 105px; gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Asosiy navigatsiya">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">IT</div>
+        <div class="brand-name">IT LIVE</div>
+      </div>
+      <div class="nav-label">Menyu</div>
+      <nav class="nav-list">
+        <button class="nav-button active" type="button" data-view="overview"><span class="nav-icon" aria-hidden="true">⌂</span> Umumiy</button>
+        <button class="nav-button" type="button" data-view="skills"><span class="nav-icon" aria-hidden="true">◇</span> Skill tree</button>
+        <button class="nav-button" type="button" data-view="ranking"><span class="nav-icon" aria-hidden="true">♧</span> Reyting</button>
+        <button class="nav-button" type="button" data-view="achievements"><span class="nav-icon" aria-hidden="true">✧</span> Yutuqlar</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="profile-mini">
+          <div class="avatar" aria-hidden="true">AS</div>
+          <div><div class="profile-name">Azizbek Student</div><div class="profile-role">Frontend yo‘nalishi</div></div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">O‘rganish markazi</div>
+          <h1 id="page-title">Umumiy ko‘rinish</h1>
+        </div>
+        <div class="topbar-right">
+          <div class="streak" title="Ketma-ket o‘qilgan kunlar"><span aria-hidden="true">🔥</span> <strong>7 kun</strong></div>
+          <div class="level-pill"><span>Daraja</span> <strong>12</strong></div>
+        </div>
+      </header>
+
+      <section class="view active" id="overview" aria-labelledby="page-title">
+        <div class="welcome">
+          <div class="welcome-copy">
+            <div class="eyebrow">Ajoyib davom etyapsiz!</div>
+            <h2>Har kuni bir qadam oldinga. ✨</h2>
+            <p>Ko‘nikmalaringizni rivojlantiring, XP to‘plang va jamoa reytingida yuqoriga ko‘tariling.</p>
+          </div>
+          <div class="welcome-xp">
+            <div class="xp-label"><span>Keyingi darajagacha</span><strong>2 450 / 3 000 XP</strong></div>
+            <div class="progress-track" role="progressbar" aria-label="Keyingi darajagacha XP" aria-valuenow="82" aria-valuemin="0" aria-valuemax="100"><div class="progress-fill" style="width:82%"></div></div>
+            <div class="xp-next">Yana 550 XP to‘plang va 13-darajaga chiqing</div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <article class="stat-card"><div class="stat-top"><span>Jami XP</span><span class="stat-icon" aria-hidden="true">✦</span></div><div class="stat-value">12 450</div><div class="stat-note"><span class="up">↑ 320 XP</span> bu hafta</div></article>
+          <article class="stat-card"><div class="stat-top"><span>O‘rganilayotgan skill</span><span class="stat-icon" aria-hidden="true">◇</span></div><div class="stat-value">8</div><div class="stat-note">4 ta yo‘nalishda</div></article>
+          <article class="stat-card"><div class="stat-top"><span>O‘rtacha progress</span><span class="stat-icon" aria-hidden="true">↗</span></div><div class="stat-value">68%</div><div class="stat-note"><span class="up">↑ 5%</span> o‘tgan haftaga nisbatan</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Yutuqlar</span><span class="stat-icon" aria-hidden="true">♛</span></div><div class="stat-value">12 <span style="color:var(--muted);font-size:14px;font-weight:500">/ 20</span></div><div class="stat-note">Yana 8 ta yutuq kutilmoqda</div></article>
+        </div>
+
+        <div class="content-grid">
+          <section class="panel">
+            <div class="panel-heading"><div><h2>Ko‘nikmalarim</h2><p>Faol yo‘nalishlardagi o‘sishingiz</p></div><button class="text-button" type="button" data-go="skills">Barchasi →</button></div>
+            <div class="skill-list">
+              <div class="skill-row"><div class="skill-symbol" aria-hidden="true">⌘</div><div><div class="skill-title">Frontend Development</div><div class="skill-subtitle">6 ta skill · 1 840 XP</div><div class="progress-track"><div class="progress-fill" style="width:78%;background:var(--purple)"></div></div></div><div class="skill-percent">78%</div></div>
+              <div class="skill-row"><div class="skill-symbol" aria-hidden="true">◈</div><div><div class="skill-title">UI / UX Design</div><div class="skill-subtitle">4 ta skill · 1 260 XP</div><div class="progress-track"><div class="progress-fill" style="width:64%;background:var(--pink)"></div></div></div><div class="skill-percent">64%</div></div>
+              <div class="skill-row"><div class="skill-symbol" aria-hidden="true">⌬</div><div><div class="skill-title">Backend Development</div><div class="skill-subtitle">5 ta skill · 980 XP</div><div class="progress-track"><div class="progress-fill" style="width:51%;background:var(--blue)"></div></div></div><div class="skill-percent">51%</div></div>
+              <div class="skill-row"><div class="skill-symbol" aria-hidden="true">▤</div><div><div class="skill-title">Soft Skills</div><div class="skill-subtitle">3 ta skill · 740 XP</div><div class="progress-track"><div class="progress-fill" style="width:43%;background:var(--green)"></div></div></div><div class="skill-percent">43%</div></div>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-heading"><div><h2>Hafta yetakchilari</h2><p>Guruhingizdagi eng faol o‘quvchilar</p></div><button class="text-button" type="button" data-go="ranking">Reyting →</button></div>
+            <div class="leader-list" id="overview-leaders"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="skills" aria-label="Skill tree">
+        <div class="section-toolbar">
+          <div><div class="eyebrow">Rivojlanish xaritasi</div><h2>Skill tree</h2></div>
+          <div class="filter-group" aria-label="Skill yo‘nalishi">
+            <button class="filter-button active" type="button" data-category="all">Barchasi</button>
+            <button class="filter-button" type="button" data-category="frontend">Frontend</button>
+            <button class="filter-button" type="button" data-category="design">UI / UX</button>
+            <button class="filter-button" type="button" data-category="backend">Backend</button>
+            <button class="filter-button" type="button" data-category="soft">Soft skills</button>
+          </div>
+        </div>
+        <div class="tree-grid" id="skill-tree"></div>
+      </section>
+
+      <section class="view" id="ranking" aria-label="O‘quvchilar reytingi">
+        <div class="section-toolbar">
+          <div><div class="eyebrow">Do‘stona musobaqa</div><h2>O‘quvchilar reytingi</h2></div>
+          <div class="filter-group" aria-label="Reyting davri">
+            <button class="filter-button active" type="button" data-period="week">Bu hafta</button>
+            <button class="filter-button" type="button" data-period="all">Umumiy</button>
+          </div>
+        </div>
+        <div class="ranking-layout">
+          <section class="panel">
+            <table class="leaderboard-table">
+              <thead><tr><th>O‘RIN</th><th>O‘QUVCHI</th><th>LEVEL</th><th>XP</th></tr></thead>
+              <tbody id="leaderboard-body"></tbody>
+            </table>
+          </section>
+          <aside class="panel weekly-card">
+            <h3>Sizning natijangiz</h3>
+            <p>Bu haftadagi faolligingiz</p>
+            <div class="weekly-stat"><span>Guruhdagi o‘rningiz</span><strong>#8</strong></div>
+            <div class="weekly-stat"><span>Bu hafta to‘plangan XP</span><strong>+320 XP</strong></div>
+            <div class="weekly-stat"><span>Keyingi o‘ringacha</span><strong>80 XP</strong></div>
+            <div class="weekly-note">Yana ozgina harakat qiling — keyingi pog‘onaga chiqishingiz mumkin! Har bir yakunlangan vazifa XP olib keladi.</div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view" id="achievements" aria-label="Yutuqlar">
+        <div class="section-toolbar">
+          <div><div class="eyebrow">Mehnatingiz e’tirofi</div><h2>Yutuqlar</h2></div>
+          <div class="filter-group" aria-label="Yutuq holati">
+            <button class="filter-button active" type="button" data-achievement-filter="all">Barchasi</button>
+            <button class="filter-button" type="button" data-achievement-filter="earned">Olingan</button>
+            <button class="filter-button" type="button" data-achievement-filter="locked">Qulflangan</button>
+          </div>
+        </div>
+        <div class="achievement-grid" id="achievement-grid"></div>
+      </section>
+
+      <div class="footer-note">SkillUp · O‘rganish yo‘lingizni kuzatib boring</div>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const learners = [
+      { name: "Nurbek Abduqahhorov", initials: "NA", level: 16, week: 590, total: 18420 },
+      { name: "Akbar Ismoilov", initials: "AI", level: 15, week: 520, total: 17280 },
+      { name: "Sevara Rustamova", initials: "SR", level: 14, week: 460, total: 15960 },
+      { name: "Bekzod Ismoilov", initials: "BI", level: 13, week: 410, total: 14800 },
+      { name: "Dilnoza Sobirova", initials: "DS", level: 13, week: 380, total: 13950 },
+      { name: "Kamron Tursunov", initials: "KT", level: 12, week: 350, total: 13100 },
+      { name: "Malika Ergasheva", initials: "ME", level: 12, week: 340, total: 12740 },
+      { name: "Azizbek Student", initials: "AS", level: 12, week: 320, total: 12450, current: true },
+      { name: "Sardor Qodirov", initials: "SQ", level: 11, week: 270, total: 11200 },
+      { name: "Nodira Hamidova", initials: "NH", level: 10, week: 230, total: 9860 }
+    ];
+
+    const skills = [
+      { name: "HTML & Semantic markup", category: "frontend", categoryName: "Frontend", icon: "⌘", description: "Semantik HTML va sahifa tuzilishini o‘rganing.", progress: 100, xp: 320, status: "Yakunlangan", color: "var(--purple)" },
+      { name: "CSS & Responsive design", category: "frontend", categoryName: "Frontend", icon: "⌘", description: "Moslashuvchan, chiroyli interfeyslar yarating.", progress: 84, xp: 280, status: "Jarayonda", color: "var(--purple)" },
+      { name: "JavaScript asoslari", category: "frontend", categoryName: "Frontend", icon: "⌘", description: "O‘zgaruvchilar, funksiyalar va DOM bilan ishlang.", progress: 62, xp: 240, status: "Jarayonda", color: "var(--purple)" },
+      { name: "React komponentlari", category: "frontend", categoryName: "Frontend", icon: "⌘", description: "Komponentlar yordamida interfeyslar tuzing.", progress: 35, xp: 160, status: "Jarayonda", color: "var(--purple)" },
+      { name: "Figma prototiplash", category: "design", categoryName: "UI / UX", icon: "◈", description: "Interaktiv prototiplar tayyorlashni o‘rganing.", progress: 72, xp: 210, status: "Jarayonda", color: "var(--pink)" },
+      { name: "Rang va tipografika", category: "design", categoryName: "UI / UX", icon: "◈", description: "Ranglar va shriftlarni uyg‘unlashtiring.", progress: 56, xp: 180, status: "Jarayonda", color: "var(--pink)" },
+      { name: "Node.js asoslari", category: "backend", categoryName: "Backend", icon: "⌬", description: "Server tomonida JavaScript ishlatishni boshlang.", progress: 48, xp: 190, status: "Jarayonda", color: "var(--blue)" },
+      { name: "REST API", category: "backend", categoryName: "Backend", icon: "⌬", description: "API yaratish va so‘rovlar bilan ishlash.", progress: 28, xp: 120, status: "Jarayonda", color: "var(--blue)" },
+      { name: "Jamoaviy muloqot", category: "soft", categoryName: "Soft skills", icon: "▤", description: "Fikrlarni aniq yetkazish va hamkorlik qiling.", progress: 80, xp: 160, status: "Jarayonda", color: "var(--green)" },
+      { name: "Vaqtni boshqarish", category: "soft", categoryName: "Soft skills", icon: "▤", description: "Vazifalarni rejalashtirib, muddatga rioya qiling.", progress: 45, xp: 130, status: "Jarayonda", color: "var(--green)" }
+    ];
+
+    const achievements = [
+      { icon: "🔥", name: "7 kunlik streak", description: "7 kun ketma-ket o‘qing.", xp: 100, earned: true },
+      { icon: "🚀", name: "Birinchi qadam", description: "Birinchi skill vazifasini yakunlang.", xp: 50, earned: true },
+      { icon: "⚡", name: "XP yig‘uvchi", description: "Jami 10 000 XP to‘plang.", xp: 250, earned: true },
+      { icon: "🎯", name: "Aniq nishon", description: "Bir yo‘nalishda 5 ta skillni yakunlang.", xp: 200, earned: true },
+      { icon: "📚", name: "Bilimdon", description: "20 ta skillni yakunlang.", xp: 400, earned: false },
+      { icon: "👑", name: "Top 3", description: "Reytingda kuchli uchlikka kiring.", xp: 300, earned: false },
+      { icon: "🌟", name: "Mukammallik", description: "Skill tree progressini 100% ga yetkazing.", xp: 500, earned: false },
+      { icon: "🤝", name: "Jamoa ruhi", description: "5 ta jamoaviy vazifani bajaring.", xp: 150, earned: false },
+      { icon: "💎", name: "Katta natija", description: "Jami 25 000 XP to‘plang.", xp: 600, earned: false }
+    ];
+
+    const pageTitles = {
+      overview: "Umumiy ko‘rinish",
+      skills: "Skill tree",
+      ranking: "O‘quvchilar reytingi",
+      achievements: "Yutuqlar"
+    };
+
+    function renderLeaders(container, limit) {
+      const sorted = [...learners].sort((a, b) => b.week - a.week).slice(0, limit);
+      container.innerHTML = sorted.map((learner, index) => `
+        <div class="leader-row ${learner.current ? "current" : ""}">
+          <div class="rank-number">${index + 1}</div>
+          <div class="avatar" aria-hidden="true">${learner.initials}</div>
+          <div class="leader-info"><div class="leader-name">${learner.name}${learner.current ? " (siz)" : ""}</div><div class="leader-meta">${learner.level}-daraja</div></div>
+          <div class="leader-xp">${learner.week.toLocaleString("uz-UZ")} XP</div>
+        </div>`).join("");
+    }
+
+    function renderLeaderboard(period) {
+      const key = period === "all" ? "total" : "week";
+      const sorted = [...learners].sort((a, b) => b[key] - a[key]);
+      document.getElementById("leaderboard-body").innerHTML = sorted.map((learner, index) => `
+        <tr class="${learner.current ? "self-row" : ""}">
+          <td class="rank-badge">${index + 1}${index === 0 ? " ✦" : ""}</td>
+          <td><div class="table-user"><div class="avatar" aria-hidden="true">${learner.initials}</div><div><div class="table-name">${learner.name}${learner.current ? " (siz)" : ""}</div><div class="table-sub">O‘quvchi</div></div></div></td>
+          <td>${learner.level}</td>
+          <td class="xp-number">${learner[key].toLocaleString("uz-UZ")}</td>
+        </tr>`).join("");
+    }
+
+    function renderSkills(category) {
+      const filtered = category === "all" ? skills : skills.filter(skill => skill.category === category);
+      document.getElementById("skill-tree").innerHTML = filtered.map(skill => `
+        <article class="tree-card">
+          <div class="tree-card-top"><div class="skill-symbol" aria-hidden="true">${skill.icon}</div><div><h3>${skill.name}</h3><div class="category-name">${skill.categoryName}</div></div></div>
+          <p>${skill.description}</p>
+          <div class="tree-progress-label"><span>Skill progress</span><strong>${skill.progress}%</strong></div>
+          <div class="progress-track" role="progressbar" aria-label="${skill.name} progressi" aria-valuenow="${skill.progress}" aria-valuemin="0" aria-valuemax="100"><div class="progress-fill" style="width:${skill.progress}%;background:${skill.color}"></div></div>
+          <div class="tree-card-footer"><span>✦ ${skill.xp} XP</span><span class="status-tag ${skill.progress === 100 ? "" : "locked"}">${skill.status}</span></div>
+        </article>`).join("");
+    }
+
+    function renderAchievements(filter) {
+      const filtered = achievements.filter(item => filter === "all" || (filter === "earned" ? item.earned : !item.earned));
+      const grid = document.getElementById("achievement-grid");
+      if (!filtered.length) {
+        grid.innerHTML = '<div class="empty-message">Bu bo‘limda hozircha yutuqlar yo‘q.</div>';
+        return;
+      }
+      grid.innerHTML = filtered.map(item => `
+        <article class="achievement ${item.earned ? "" : "locked"}">
+          ${item.earned ? '<span class="earned-mark">✓ Olingan</span>' : ""}
+          <div class="achievement-icon" aria-hidden="true">${item.icon}</div>
+          <h3>${item.name}</h3>
+          <p>${item.description}</p>
+          <span class="achievement-xp">✦ ${item.xp} XP</span>
+        </article>`).join("");
+    }
+
+    document.querySelectorAll(".nav-button").forEach(button => {
+      button.addEventListener("click", () => showView(button.dataset.view));
+    });
+
+    document.querySelectorAll("[data-go]").forEach(button => {
+      button.addEventListener("click", () => showView(button.dataset.go));
+    });
+
+    function showView(viewId) {
+      document.querySelectorAll(".view").forEach(view => view.classList.toggle("active", view.id === viewId));
+      document.querySelectorAll(".nav-button").forEach(button => button.classList.toggle("active", button.dataset.view === viewId));
+      document.getElementById("page-title").textContent = pageTitles[viewId] || pageTitles.overview;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.querySelectorAll("[data-category]").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll("[data-category]").forEach(item => item.classList.toggle("active", item === button));
+        renderSkills(button.dataset.category);
+      });
+    });
+
+    document.querySelectorAll("[data-period]").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll("[data-period]").forEach(item => item.classList.toggle("active", item === button));
+        renderLeaderboard(button.dataset.period);
+      });
+    });
+
+    document.querySelectorAll("[data-achievement-filter]").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll("[data-achievement-filter]").forEach(item => item.classList.toggle("active", item === button));
+        renderAchievements(button.dataset.achievementFilter);
+      });
+    });
+
+    let toastTimer;
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      window.clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => toast.classList.remove("visible"), 2400);
+    }
+
+    document.querySelectorAll(".nav-button").forEach(button => {
+      button.addEventListener("mouseenter", () => {
+        if (!button.classList.contains("active")) button.setAttribute("title", `${pageTitles[button.dataset.view]} bo‘limini ochish`);
+      });
+    });
+
+    renderLeaders(document.getElementById("overview-leaders"), 5);
+    renderLeaderboard("week");
+    renderSkills("all");
+    renderAchievements("all");
+  </script>
+</body>
+</html>
